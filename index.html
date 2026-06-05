@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pflegeanleitung - Nueva Vida</title>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #fdfbf7; overflow: hidden; font-family: 'Georgia', serif; }
+        .story-container { position: relative; width: 100%; height: 100%; max-width: 500px; margin: 0 auto; background: #000; }
+        .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; opacity: 0; transition: opacity 0.3s ease; }
+        .slide.active { opacity: 1; z-index: 10; }
+        .tap-left { position: absolute; top: 0; left: 0; width: 30%; height: 100%; z-index: 20; }
+        .tap-right { position: absolute; top: 0; right: 0; width: 70%; height: 100%; z-index: 20; }
+        .progress-container { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; gap: 5px; z-index: 30; }
+        .progress-bar { flex: 1; height: 3px; background: rgba(255,255,255,0.4); border-radius: 2px; overflow: hidden; }
+        .progress-bar .fill { height: 100%; background: #d4af37; width: 0%; }
+        
+        /* Animación de la barra */
+        .slide.active ~ .progress-container #prog0 .fill { animation: fillBar 5s linear forwards; }
+        
+        /* Botón CTA final */
+        .cta-container { position: absolute; bottom: 40px; left: 0; width: 100%; text-align: center; z-index: 30; display: none; opacity: 0; transition: opacity 0.5s ease; }
+        .cta-button { background-color: #d4af37; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 25px; font-size: 16px; font-weight: bold; letter-spacing: 1px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .cta-button:hover { background-color: #b5952f; }
+    </style>
+</head>
+<body>
+<div class="story-container">
+    <div class="progress-container">
+        <div class="progress-bar" id="prog0"><div class="fill"></div></div>
+        <div class="progress-bar" id="prog1"><div class="fill"></div></div>
+        <div class="progress-bar" id="prog2"><div class="fill"></div></div>
+        <div class="progress-bar" id="prog3"><div class="fill"></div></div>
+    </div>
+    
+    <!-- Asegúrate de nombrar tus imágenes exactamente así -->
+    <div class="slide active" style="background-image: url('slide1.png');"></div>
+    <div class="slide" style="background-image: url('slide2.png');"></div>
+    <div class="slide" style="background-image: url('slide3.png');"></div>
+    <div class="slide" style="background-image: url('slide4.png');"></div>
+    
+    <div class="tap-left" onclick="prevSlide()"></div>
+    <div class="tap-right" onclick="nextSlide()"></div>
+
+    <div class="cta-container" id="ctaFinal">
+        <a href="mailto:soporte@nuevavida.com?subject=Frage%20zu%20Ewige%20Rosen" class="cta-button">Fragen? Kontaktiere uns</a>
+    </div>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const slideDuration = 5000; // 5 segundos por slide
+    let timer;
+
+    function updateUI() {
+        slides.forEach((slide, index) => {
+            slide.classList.toggle('active', index === currentSlide);
+            const prog = document.getElementById('prog' + index).querySelector('.fill');
+            
+            if (index < currentSlide) {
+                prog.style.transition = 'none';
+                prog.style.width = '100%';
+            } else if (index === currentSlide) {
+                prog.style.transition = `width ${slideDuration}ms linear`;
+                setTimeout(() => prog.style.width = '100%', 50);
+            } else {
+                prog.style.transition = 'none';
+                prog.style.width = '0%';
+            }
+        });
+
+        // Mostrar CTA solo en la última slide
+        const cta = document.getElementById('ctaFinal');
+        if (currentSlide === totalSlides - 1) {
+            cta.style.display = 'block';
+            setTimeout(() => cta.style.opacity = '1', 100);
+        } else {
+            cta.style.opacity = '0';
+            setTimeout(() => cta.style.display = 'none', 300);
+        }
+
+        clearTimeout(timer);
+        if (currentSlide < totalSlides - 1) {
+            timer = setTimeout(nextSlide, slideDuration);
+        }
+    }
+
+    function nextSlide() {
+        if (currentSlide < totalSlides - 1) {
+            currentSlide++;
+            updateUI();
+        }
+    }
+
+    function prevSlide() {
+        if (currentSlide > 0) {
+            currentSlide--;
+            updateUI();
+        }
+    }
+
+    // Iniciar
+    setTimeout(() => updateUI(), 100);
+</script>
+</body>
+</html>
